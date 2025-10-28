@@ -23,10 +23,16 @@ ensureDirectories();
 // Get all prompt files
 router.get('/', async (req, res) => {
   try {
+    console.log('📁 PROMPTS_DIR:', PROMPTS_DIR);
+    console.log('📁 Directory exists:', existsSync(PROMPTS_DIR));
+
     const files = await fs.readdir(PROMPTS_DIR);
+    console.log('📄 All files found:', files);
+
     const promptFiles = files.filter(file =>
       file.endsWith('.txt') || file.endsWith('.md')
     );
+    console.log('✅ Filtered prompt files:', promptFiles);
 
     const prompts = await Promise.all(
       promptFiles.map(async (filename) => {
@@ -42,7 +48,8 @@ router.get('/', async (req, res) => {
 
     res.json(prompts);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('❌ Error reading prompts:', error);
+    res.status(500).json({ error: error.message, directory: PROMPTS_DIR });
   }
 });
 

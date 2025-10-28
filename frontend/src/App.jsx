@@ -3,7 +3,9 @@ import axios from 'axios';
 import { FileText, History, Save, Copy, ChevronDown, ChevronRight, Folder, FileCode } from 'lucide-react';
 import './App.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = window.APP_CONFIG?.API_URL !== '__API_URL__'
+  ? window.APP_CONFIG?.API_URL
+  : (import.meta.env.VITE_API_URL || 'http://localhost:3000');
 
 function App() {
   const [view, setView] = useState('prompts'); // 'prompts' or 'history'
