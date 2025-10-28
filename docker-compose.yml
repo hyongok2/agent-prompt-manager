@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    image: agent-prompt-manager-backend:v1.0.0
+    container_name: agent-prompt-manager-backend
+    ports:
+      - "5711:5711"
+    environment:
+      - PORT=5711
+      - PROMPTS_DIR=/app/prompts
+      - HISTORY_DIR=/app/history
+    volumes:
+      - ./prompts:/app/prompts
+      - ./history:/app/history
+    restart: unless-stopped
+    networks:
+      - agent-prompt-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://localhost:5711
+    image: agent-prompt-manager-frontend:v1.0.0
+    container_name: agent-prompt-manager-frontend
+    ports:
+      - "5710:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - agent-prompt-network
+
+networks:
+  agent-prompt-network:
+    driver: bridge
+
+volumes:
+  prompts:
+  history:
