@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FileText, History, Save, Copy, ChevronDown, ChevronRight, Folder, FileCode } from 'lucide-react';
+import { FileText, History, Save, Copy, ChevronDown, ChevronRight, Folder, FileCode, RefreshCw } from 'lucide-react';
 import './App.css';
 
 const API_URL = window.APP_CONFIG?.API_URL !== '__API_URL__'
@@ -20,6 +20,7 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(320);
   const [isResizing, setIsResizing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const sidebarRef = useRef(null);
 
@@ -120,6 +121,19 @@ function App() {
     setTimeout(() => setMessage(''), 3000);
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchPrompts();
+      await fetchHistoryTree();
+      showMessage('새로고침 완료!', 'success');
+    } catch (error) {
+      showMessage('새로고침 실패', 'error');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   const handleMouseDown = (e) => {
     setIsResizing(true);
     e.preventDefault();
@@ -158,6 +172,14 @@ function App() {
             <FileCode size={32} />
             <h1>Agent Prompt Manager</h1>
           </div>
+          <button
+            className="btn btn-secondary refresh-btn"
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw size={18} className={refreshing ? 'spinning' : ''} />
+            새로고침
+          </button>
         </div>
       </header>
 
